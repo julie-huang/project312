@@ -44,13 +44,18 @@ course(cpsc110, 4, firstYearCpsc).
 
 % Promotion requirements: 24 or more credits in total, which must include 15 or more credits of first-year Science coursework (100-level).
 
-promotion_phrase([second, year], Transcript) :- creditCounter(Transcript, NumCredits).
+promotion_phrase([second, year], Transcript) :- creditCounter(Transcript, Total).
 
-%% NEEDS TO BE FIXED
-creditCounter(Transcript,NumCredits) :-
+creditCounter(Transcript,Total) :-
+    year1Credit(Transcript, Total), 24 @=< Total,
     year1_chem_phys_reqs_satisfied(Transcript),
     year1_math_reqs_satisfied(Transcript),
     year1_comp_sci_reqs_satisfied(Transcript).
+
+year1Credit([],0).
+year1Credit([H|T], Total) :-
+    course(H, C1, _), year1Credit(T, T1), Total is C1+T1.
+
 
 question(Transcript, [can, i, promote, to | Year], yes) :- promotion_phrase(Year,Transcript).
 
@@ -125,7 +130,7 @@ year1_chem_phys_reqs_satisfied(A) :-
 
 % question([chem121, phys101, cpsc110], [have, i, met, year1, computer, science, requirements], Ans).
 
-% question([engl110, engl112, chem121, chem123, math102, math103, cpsc110, phys101, math101], [can, i, promote, to, second, year], Ans).
+% question([phys107, chem121, engl112, math102, math103, math121, astu100, chem123, math103, phys101, engl110, cpsc110], [can, i, promote, to, second, year], Ans).
 
 % PRE-REQ QUESTIONS
 % =========================================================================
