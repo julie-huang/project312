@@ -89,9 +89,6 @@ course(math120, 3, firstYearMath_diff).
 course(math180, 3, firstYearMath_diff).
 course(math184, 3, firstYearMath_diff).
 
-% returns true if credits add up to Z which in this case needs to be 6
-comm_requirements(X, Y) :- course(X, C1, communications), course(Y, C2, communications), dif(X,Y), 6 is C1+C2.
-
 % pre_Reqs(X, Y) is true if X is a pre-req for course Y
 pre_Reqs(X, math200) :- X = math101; X = math103; X = math105; X = math121.
 
@@ -104,12 +101,32 @@ pre_req_phrase(Course, Transcript) :- pre_Reqs(X, Course), member(X, Transcript)
 question(Transcript, [have, i, met | Req], yes) :- requirement_phrase(Req, Transcript).
 
 % requirement_phrases returns true if requirement is met
-% num credits need to be 6
-requirement_phrase([communications, requirements], Transcript) :- comm_requirements(X,Y), member(X, Transcript), member(Y, Transcript).
 
 requirement_phrase([first,year,differential, math], Transcript) :-member(math100, Transcript); member(math102, Transcript); member(math104, Transcript); member(math120, Transcript);
     member(math180, Transcript); member(math184, Transcript).
 
+requirement_phrase([communications, requirements], Transcript) :- communication_requirement_satisfied(Transcript).
+
+% Given two courses A and B, checks if it satisfies the communcation requirements
+communication_requirement([A,B]) :- 
+    course(A,C1,X), 
+    course(B,C2,X), 
+    X = communications,
+    dif(A,B),
+    6 is C1 + C2.
+
+% Given a list of courses A, checks if the communication requirements are satisfied
+communication_requirement_satisfied(A) :- 
+    subset(2, A, B),
+    communication_requirement(B).
+
+%%%%
+subset(0, [], []).
+subset(Len, [E|Tail], [E|NTail]):-
+    succ(PLen, Len),
+    (PLen > 0 -> subset(PLen, Tail, NTail) ; NTail=[]).
+subset(Len, [_|Tail], NTail):-
+    subset(Len, Tail, NTail).
 
 % QUERIES TESTED
 % question([engl110, cpsc110], [have, i, met, communications, requirements], Ans).
