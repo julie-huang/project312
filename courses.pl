@@ -89,6 +89,12 @@ course(math120, 3, firstYearMath_diff).
 course(math180, 3, firstYearMath_diff).
 course(math184, 3, firstYearMath_diff).
 
+% integral math
+course(math101, 3, firstYearMath_intg).
+course(math103, 3, firstYearMath_intg).
+course(math105, 3, firstYearMath_intg).
+course(math121, 3, firstYearMath_intg).
+
 % pre_Reqs(X, Y) is true if X is a pre-req for course Y
 pre_Reqs(X, math200) :- X = math101; X = math103; X = math105; X = math121.
 
@@ -102,8 +108,7 @@ question(Transcript, [have, i, met | Req], yes) :- requirement_phrase(Req, Trans
 
 % requirement_phrases returns true if requirement is met
 
-requirement_phrase([first,year,differential, math], Transcript) :-member(math100, Transcript); member(math102, Transcript); member(math104, Transcript); member(math120, Transcript);
-    member(math180, Transcript); member(math184, Transcript).
+requirement_phrase([first,year,math,requirements], Transcript) :- first_year_math_requirements_satisfied(Transcript).
 
 requirement_phrase([communications, requirements], Transcript) :- communication_requirement_satisfied(Transcript).
 
@@ -128,11 +133,25 @@ subset(Len, [E|Tail], [E|NTail]):-
 subset(Len, [_|Tail], NTail):-
     subset(Len, Tail, NTail).
 
+% Given two courses A and B, check if it satisfies the first year math requirements. Need a differential and a integral math course
+first_year_math_requirements([A,B]) :-
+    course(A, C1, firstYearMath_diff),
+    course(B, C2, firstYearMath_intg),
+    6 is C1 + C2.
+
+first_year_math_requirements_satisfied(A) :-
+    subset(2, A, B),
+    first_year_math_requirements(B).
+
 % QUERIES TESTED
 % question([engl110, cpsc110], [have, i, met, communications, requirements], Ans).
 % question([engl110,engl112, cpsc110], [have, i, met, communications, requirements], Ans).
 % question([phys101, cpsc110], [have, i, met, communications, requirements], Ans).
 % question([what, are, pre-reqs, for | math200], C).
+
+% ?- question([engl110, cpsc110, math102, math103], [have, i, met, first, year, math, requirements], Ans).
+% Ans = yes ;
+% false.
 
 %% DOES NOT RETURN TRUE WHEN COMMAS ARE USED
 % question([engl110, engl112, math101], [do, i, have, pre-reqs, for, math200], Ans).
