@@ -95,6 +95,15 @@ course(math103, 3, firstYearMath_intg).
 course(math105, 3, firstYearMath_intg).
 course(math121, 3, firstYearMath_intg).
 
+% CHEM (numbered above 111) and/or PHYS (numbered above 100) total is 6 credits
+course(chem121, 4, firstYearPhysorChem).
+course(chem123, 4, firstYearPhysorChem).
+course(phys101, 3, firstYearPhysorChem).
+course(phys107, 3, firstYearPhysorChem).
+course(phys108, 3, firstYearPhysorChem).
+
+course(cpsc110, 4, firstYearCpsc).
+
 % pre_Reqs(X, Y) is true if X is a pre-req for course Y
 pre_Reqs(X, math200) :- X = math101; X = math103; X = math105; X = math121.
 
@@ -111,6 +120,10 @@ question(Transcript, [have, i, met | Req], yes) :- requirement_phrase(Req, Trans
 requirement_phrase([first,year,math,requirements], Transcript) :- first_year_math_requirements_satisfied(Transcript).
 
 requirement_phrase([communications, requirements], Transcript) :- communication_requirement_satisfied(Transcript).
+
+requirment_phrase([year1, chem, and, physics, requirements], Transcript) :-
+    year1_chem_phys_reqs_satisfied(Transcript).
+
 
 % Given two courses A and B, checks if it satisfies the communcation requirements
 communication_requirement([A,B]) :- 
@@ -139,9 +152,20 @@ first_year_math_requirements([A,B]) :-
     course(B, C2, firstYearMath_intg),
     6 is C1 + C2.
 
+% Given two courses A and B, check if it satisfies the first year chem and/or phys requirements. at least 6 credits must be achieved
+year1_chem_phys_reqs([A,B]) :-
+    course(A, C1, firstYearPhysorChem),
+    course(B, C2, firstYearPhysorChem),
+    Z is C1 + C2,
+    6 @=< Z.
+
 first_year_math_requirements_satisfied(A) :-
     subset(2, A, B),
     first_year_math_requirements(B).
+
+year1_chem_phys_reqs_satisfied(A) :-
+    subset(2, A, B),
+    year1_chem_phys_reqs(B).
 
 % QUERIES TESTED
 % question([engl110, cpsc110], [have, i, met, communications, requirements], Ans).
@@ -153,10 +177,7 @@ first_year_math_requirements_satisfied(A) :-
 % Ans = yes ;
 % false.
 
-%% DOES NOT RETURN TRUE WHEN COMMAS ARE USED
-% question([engl110, engl112, math101], [do, i, have, pre-reqs, for, math200], Ans).
-% question([engl110, math101, engl112], [do, i, have, pre-reqs, for, math200], yes)
-% pre_req_phrase(math200, [math101, engl112]).
+% question([chem121, phys101], [have, i, met, year1, chem, and, physics, requirements], Ans).
 
 %% WORKS
 % question([math101, engl112], [do, i, have, pre-reqs, for | math200], Answer).
@@ -165,14 +186,26 @@ first_year_math_requirements_satisfied(A) :-
 
 %=========================================================================
 
-% To get the input from a line:
-
-q(Ans) :-
+/* q(Ans) :-
+write("enter your courses: "), flush_output(current_output),
+readln(Transcript),
 write("Ask me: "), flush_output(current_output),
 readln(Ln),
-question(transcript(A),Ln,Ans),
-member(End,[[],['?'],['.']]).
+question(Transcript,Ln,Ans),
+member(Ln,[[],['?'],['.']]). */
+
+q(Ans) :-
+write("enter your course as a list: "), flush_output(current_output),
+readln(Transcript),
+write("Ask me: "), flush_output(current_output),
+readln(Ln),
+question(Transcript,Ln,Ans).
 
 
-
+% DOES NOT WORK YET
+% question([what, are, pre-reqs, for | Course], C) :- pre_Reqs(C, Course).
+q2(Ans) :-
+write("Ask me: "), flush_output(current_output),
+readln(Ln),
+question(Ln,[],Ans).
 
