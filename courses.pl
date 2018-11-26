@@ -121,7 +121,7 @@ requirement_phrase([first,year,math,requirements], Transcript) :- first_year_mat
 
 requirement_phrase([communications, requirements], Transcript) :- communication_requirement_satisfied(Transcript).
 
-requirment_phrase([year1, chem, and, physics, requirements], Transcript) :-
+requirement_phrase([year1,chem,and,physics,requirements], Transcript) :-
     year1_chem_phys_reqs_satisfied(Transcript).
 
 
