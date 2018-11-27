@@ -153,6 +153,49 @@ year2_stat_reqs_satisfied(A) :-
 
 % question([phys107, chem121, engl112, math102, math103, math121, astu100, chem123, math103, phys101, engl110, cpsc110], [can, i, promote, to, second, year], Ans).
 
+
+%======================================================================
+% YEAR2
+
+course(cpsc210, 4, year2compsci).
+course(math210, 4, year2compsci).
+course(math200, 3, year2math).
+course(math220, 3, year2math).
+course(math221, 3, year2math).
+course(stat200, 3, introStats).
+course(stat302, 3, introProbability).
+course(math302, 3, introProbability).
+course(fren101, 3, artsElective).
+course(fmst210, 3, artsElective).
+
+pre_Reqs(cpsc110, cpsc210).
+pre_Reqs(X, math210) :- X = math101; X = math103; X = math105.
+pre_Reqs(X, math200) :- X = math101; X = math103; X = math105; X = math121.
+pre_Reqs(X, math220) :- X = math101; X = math103; X = math105; X = math121.
+pre_Reqs(X, math221) :- X = math100; X = math102; X = math104; X = math120; X = math180; X = math184; X = math101; X = math103; X = math105; X = math121.
+pre_Reqs(X, stat200) :- X = math101; X = math103; X = math105; X = math121.
+pre_Reqs(X, stat302) :- X = math200; X = math226; X = math217; X = math253; X = math263.
+pre_Reqs(X, math302) :- X = math200; X = math226; X = math217; X = math253; X = math263.
+
+course(stat305, 3, year3stats).
+course(stat306, 3, year3stats).
+course(math307, 3, upperYearMath).
+course(math303, 3, upperYearMath).
+course(stat404, 3, upperYearStats).
+course(stat443, 3, upperYearStats).
+course(stat406, 3, upperYearStats).
+course(stat450, 3, upperYearStats).
+course(stat300, 3, upperYearStats).
+course(stat344, 3, upperYearStats).
+
+pre_Reqs(X, Y, stat305) :- X = stat200; X = biol300; X = stat241; X = stat251; X = comm291; X = econ325; X = frst231; X = psyc218; X = psyc218; X = psyc366, Y = math302; Y = stat302.
+
+pre_Reqs(X, Y, Z, stat306) :- X = math152; X = math221; X = math223, Y = stat200; Y = stat241; Y = stat251; Y = stat300; Y = biol300; Y = comm291; Y = econ325; Y = econ327; Y = frst231; Y = psyc218, Z = math302; Z = stat302.
+
+pre_Reqs(X, Y, math307) :- X = math152; X = math221; X = math223, Y = math200; Y = math217; Y = math226; Y = math253; Y = math263.
+
+pre_Reqs(X, Y, stat344) :- X = stat200; X = biol300; X = stat241; X = stat251; X = comm291; X = econ325; X = frst231; X = psyc218; X = psyc218; X = psyc366, Y = math302; Y = stat302.
+
 % PRE-REQ QUESTIONS
 % =========================================================================
 
