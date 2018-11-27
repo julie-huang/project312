@@ -41,27 +41,33 @@ course(phys108, 3, firstYearPhysorChem).
 % CPSC requirements
 course(cpsc110, 4, firstYearCpsc).
 
+% Second year courses
+course(stat200, 3, secondYearStat).
 
-% Promotion requirements: 24 or more credits in total, which must include 15 or more credits of first-year Science coursework (100-level).
 
-promotion_phrase([second, year], Transcript) :- creditCounter(Transcript, Total).
+% First year promotion requirements: 24 or more credits in total, which must include 15 or more credits of first-year Science coursework (100-level).
 
-creditCounter(Transcript,Total) :-
-    year1Credit(Transcript, Total), 24 @=< Total,
+promotion_phrase([second, year], Transcript) :-
+    creditCounter(Transcript, Total), 24 @=< Total,
     year1_chem_phys_reqs_satisfied(Transcript),
     year1_math_reqs_satisfied(Transcript),
     year1_comp_sci_reqs_satisfied(Transcript).
 
-year1Credit([],0).
-year1Credit([H|T], Total) :-
-    course(H, C1, _), year1Credit(T, T1), Total is C1+T1.
+% Second year promotion requirements: 48 or more credits in total, stat 200 completed
+promotion_phrase([third, year], Transcript) :-
+    creditCounter(Transcript, Total), 48 @=< Total,
+    year2_stat_reqs_satisfied(Transcript).
+
+creditCounter([],0).
+creditCounter([H|T], Total) :-
+    course(H, C1, _), creditCounter(T, T1), Total is C1+T1.
 
 
 question(Transcript, [can, i, promote, to | Year], yes) :- promotion_phrase(Year,Transcript).
 
 question(Transcript, [have, i, met | Req], yes) :- requirement_phrase(Req, Transcript).
 
-% requirement_phrases returns true if requirement is met
+% first year requirement_phrases returns true if requirement is met
 requirement_phrase([first,year,math,requirements], Transcript) :- year1_math_reqs_satisfied(Transcript).
 
 requirement_phrase([communications, requirements], Transcript) :- communication_reqs_satisfied(Transcript).
@@ -74,6 +80,9 @@ requirement_phrase([year1,computer, science, requirements], Transcript) :-
 
 year1_comp_sci_reqs_satisfied(Transcript) :- member(cpsc110, Transcript).
 
+% second year requirement_phrases returns true if requirement is met
+
+requirement_phrase([second,year,statistics,requirements], Transcript) :- year2_stat_reqs_satisfied(Transcript).
 
 % Given two courses A and B, checks if it satisfies the communcation requirements
 communication_requirement([A,B]) :- 
@@ -109,13 +118,25 @@ year1_chem_phys_reqs([A,B]) :-
     Z is C1 + C2,
     6 @=< Z.
 
+year2_stat_reqs([A]) :-
+    course(A, 3, secondYearStat),
+    A = stat200.
+
+
+% Given a transcript (list of courses) A, true if there are two courses B that satisfy the year1_math_reqs
 year1_math_reqs_satisfied(A) :-
     subset(2, A, B),
     year1_math_reqs(B).
 
+% Given a transcript (list of courses) A, true if there are two courses B that satisfy the year1_chem_phys_reqs
 year1_chem_phys_reqs_satisfied(A) :-
     subset(2, A, B),
     year1_chem_phys_reqs(B).
+
+% Given a transcrip (list of courses) A, true if there is one course that satisfies year2_stat_reqs
+year2_stat_reqs_satisfied(A) :-
+    subset(1, A, B),
+    year2_stat_reqs(B).
 
 % QUERIES TESTED
 % question([engl110, cpsc110], [have, i, met, communications, requirements], Ans).
