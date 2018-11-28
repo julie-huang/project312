@@ -57,14 +57,14 @@ course(math302, 3, introProbability).
 course(fren101, 3, artsElective).
 course(fmst210, 3, artsElective).
 
-pre_Reqs(cpsc110, cpsc210).
-pre_Reqs(X, math210) :- X = math101; X = math103; X = math105.
-pre_Reqs(X, math200) :- X = math101; X = math103; X = math105; X = math121.
-pre_Reqs(X, math220) :- X = math101; X = math103; X = math105; X = math121.
-pre_Reqs(X, math221) :- X = math100; X = math102; X = math104; X = math120; X = math180; X = math184; X = math101; X = math103; X = math105; X = math121.
-pre_Reqs(X, stat200) :- X = math101; X = math103; X = math105; X = math121.
-pre_Reqs(X, stat302) :- X = math200; X = math226; X = math217; X = math253; X = math263.
-pre_Reqs(X, math302) :- X = math200; X = math226; X = math217; X = math253; X = math263.
+pre_Reqs([cpsc110], cpsc210).
+pre_Reqs([X], math210) :- X = math101; X = math103; X = math105.
+pre_Reqs([X], math200) :- X = math101; X = math103; X = math105; X = math121.
+pre_Reqs([X], math220) :- X = math101; X = math103; X = math105; X = math121.
+pre_Reqs([X], math221) :- X = math100; X = math102; X = math104; X = math120; X = math180; X = math184; X = math101; X = math103; X = math105; X = math121.
+pre_Reqs([X], stat200) :- X = math101; X = math103; X = math105; X = math121.
+pre_Reqs([X], stat302) :- X = math200; X = math226; X = math217; X = math253; X = math263.
+pre_Reqs([X], math302) :- X = math200; X = math226; X = math217; X = math253; X = math263.
 
 %======================================================================
 %% YEAR3 / Year 4
@@ -79,13 +79,29 @@ course(stat450, 3, upperYearStats).
 course(stat300, 3, upperYearStats).
 course(stat344, 3, upperYearStats).
 
-pre_Reqs(X, Y, stat305) :- X = stat200; X = biol300; X = stat241; X = stat251; X = comm291; X = econ325; X = frst231; X = psyc218; X = psyc218; X = psyc366, Y = math302; Y = stat302.
+% pre_Reqs([X, Y], stat305) :- 
+%     X = stat200; X = biol300; X = stat241; X = stat251; X = comm291; X = econ325; X = frst231; X = psyc218; X = psyc218; X = psyc366, 
+%     Y = math302; Y = stat302.
 
-pre_Reqs(X, Y, Z, stat306) :- X = math152; X = math221; X = math223, Y = stat200; Y = stat241; Y = stat251; Y = stat300; Y = biol300; Y = comm291; Y = econ325; Y = econ327; Y = frst231; Y = psyc218, Z = math302; Z = stat302.
+pre_Reqs([X,Y], stat305) :-
+    member(X, [stat200, biol300, stat241, stat251, comm291, econ325, frst231, psyc218]),
+    member(Y, [math302, stat302]).
 
-pre_Reqs(X, Y, math307) :- X = math152; X = math221; X = math223, Y = math200; Y = math217; Y = math226; Y = math253; Y = math263.
+pre_Reqs([X, Y, Z], stat306) :- 
+    X = math152; X = math221; X = math223, 
+    Y = stat200; Y = stat241; Y = stat251; Y = stat300; Y = biol300; Y = comm291; Y = econ325; Y = econ327; Y = frst231; Y = psyc218, 
+    Z = math302; Z = stat302.
 
-pre_Reqs(X, Y, stat344) :- X = stat200; X = biol300; X = stat241; X = stat251; X = comm291; X = econ325; X = frst231; X = psyc218; X = psyc218; X = psyc366, Y = math302; Y = stat302.
+pre_Reqs([X, Y], math307) :- 
+    X = math152; X = math221; X = math223, 
+    Y = math200; Y = math217; Y = math226; Y = math253; Y = math263.
+
+pre_Reqs([X, Y], stat344) :- 
+    X = stat200; X = biol300; X = stat241; X = stat251; X = comm291; X = econ325; X = frst231; X = psyc218; X = psyc218; X = psyc366, 
+    Y = math302; Y = stat302.
+
+pair(L1, L2, Pairs):-
+  findall({A,B}, (member(A, L1), member(B, L2)), Pairs).
 
 %======================================================================
 %% Requirements 
@@ -278,10 +294,17 @@ pre_Reqs(X, math200) :- X = math101; X = math103; X = math105; X = math121.
 
 question([what, are, pre-reqs, for | Course], C) :- pre_Reqs(C, Course).
 
-question(Transcript, [do, i, have, pre-reqs, for | Course], yes) :- pre_req_phrase(Course, Transcript).
+question(Transcript, [do, i, have, pre-reqs, for | Course], yes) :- have_pre_reqs(Course, Transcript).
 
 
-pre_req_phrase(Course, Transcript) :- pre_Reqs(X, Course), member(X, Transcript).
+have_pre_reqs(Course, Transcript) :- 
+    course(Course,_,_),
+    pre_Reqs(P, Course),
+    contained_in(P, Transcript).
+
+% contained_in(L1, L2) succeeds if all elements of L1 are contained in L2
+contained_in(L1, L2) :- maplist(contains(L2), L1).
+contains(L, X) :- member(X, L).
 
 %% WORKS
 % question([math101, engl112], [do, i, have, pre-reqs, for | math200], Answer).
