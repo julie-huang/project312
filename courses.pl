@@ -3,6 +3,19 @@
 %======================================================================
 %% Courses
 
+% Arts Electives
+
+course(fren101, 3, artsElective).
+course(fmst210, 3, artsElective).
+course(chin131, 3, artsElective).
+course(chin133, 3, artsElective).
+course(anth203, 3, artsElective).
+course(anth205, 3, artsElective).
+course(soci100, 6, artsElective).
+course(soci200, 3, artsElective).
+course(asia101, 3, artsElective).
+course(crwr200, 3, artsElective).
+
 %% YEAR 1
 % course(X,Y,Z), returns true if X is a course code, Y is the number of credits, and Z is the requirement course satisfies
 
@@ -54,9 +67,7 @@ course(math221, 3, year2math).
 course(stat200, 3, introStats).
 course(stat302, 3, introProbability).
 course(math302, 3, introProbability).
-course(fren101, 3, artsElective).
-course(fmst210, 3, artsElective).
-course(chin111, 3, artsElective).
+
 
 pre_Reqs([cpsc110], cpsc210).
 pre_Reqs([X], math210) :- member(X, [math101, math103, math105]).
@@ -222,6 +233,17 @@ thematic_reqs([A,B,C]) :-
     course(A, 3, econThematic), course(B, 3, econThematic), course(C, 3, econThematic), dif(A,B), dif(A,C), dif(B,C);
     course(A, 3, psycThematic), course(B, 3, psycThematic), course(C, 3, psycThematic), dif(A,B), dif(A,C), dif(B,C).
 
+arts_requirements(Transcript) :-
+    onlyArtsCreditCounter(Transcript, Arts, ArtCredit),  12 @=< ArtCredit.
+
+% returns true if Arts is the subset of art classses in a transcript, and total is the number of art credits
+onlyArtsCreditCounter(Transcript, Arts, Total) :-
+    findall(X, (course(X, _, artsElective), member(X, Transcript)), Arts),
+    creditCounter(Arts, Total).
+
+% findall(X, (course(X, _, artsElective), member(X, [chin131, chin133, math101])), Arts).
+
+%  onlyArtsCreditCounter([chin131, chin133, math101], Arts, Total).
 
 %======================================================================
 %% Requirements Satisfied 
@@ -273,6 +295,9 @@ upper_math_reqs_satisfied(A) :-
 thematic_reqs_satisfied(A) :-
     subset(3, A, B),
     thematic_reqs(B).
+
+arts_reqs_satisfied(A) :-
+    arts_requirements(A).
 %======================================================================
 % Promotion 
 
@@ -312,12 +337,11 @@ graduation_phrase([graduate], Transcript) :-
     promotion_phrase([fourth, year], Transcript),
     year4_stat_reqs_satisfied(Transcript),
     upper_math_reqs_satisfied(Transcript),
+    arts_reqs_satisfied(Transcript),
     thematic_reqs_satisfied(Transcript).
 
 
 
-
-    
 %======================================================================
 % Requirement Phrases
 
@@ -368,8 +392,6 @@ question(Transcript, [can, i | Graduate], yes) :- graduation_phrase(Graduate, Tr
 % question([engl110, cpsc110], [have, i, met, communications, requirements], Ans).
 % question([engl110,engl112, cpsc110], [have, i, met, communications, requirements], Ans).
 % question([phys101, cpsc110], [have, i, met, communications, requirements], Ans).
-
-
 
 % ?- question([engl110, cpsc110, math102, math103], [have, i, met, first, year, math, requirements], Ans).
 % Ans = yes ;
