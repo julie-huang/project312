@@ -1,7 +1,9 @@
 % Database about a STATS major
 
-%==========================================================================
-% YEAR 1
+%======================================================================
+%% Courses
+
+%% YEAR 1
 % course(X,Y,Z), returns true if X is a course code, Y is the number of credits, and Z is the requirement course satisfies
 
 course(engl100, 3, communications).
@@ -41,121 +43,8 @@ course(phys108, 3, firstYearPhysorChem).
 % CPSC requirements
 course(cpsc110, 4, firstYearCpsc).
 
-% Second year courses
-course(stat200, 3, secondYearStat).
-
-
-% First year promotion requirements: 24 or more credits in total, which must include 15 or more credits of first-year Science coursework (100-level).
-
-promotion_phrase([second, year], Transcript) :-
-    creditCounter(Transcript, Total), 24 @=< Total,
-    year1_chem_phys_reqs_satisfied(Transcript),
-    year1_math_reqs_satisfied(Transcript),
-    year1_comp_sci_reqs_satisfied(Transcript).
-
-% Second year promotion requirements: 48 or more credits in total, stat 200 completed
-promotion_phrase([third, year], Transcript) :-
-    creditCounter(Transcript, Total), 48 @=< Total,
-    year2_stat_reqs_satisfied(Transcript).
-
-creditCounter([],0).
-creditCounter([H|T], Total) :-
-    course(H, C1, _), creditCounter(T, T1), Total is C1+T1.
-
-
-question(Transcript, [can, i, promote, to | Year], yes) :- promotion_phrase(Year,Transcript).
-
-question(Transcript, [have, i, met | Req], yes) :- requirement_phrase(Req, Transcript).
-
-% first year requirement_phrases returns true if requirement is met
-requirement_phrase([first,year,math,requirements], Transcript) :- year1_math_reqs_satisfied(Transcript).
-
-requirement_phrase([communications, requirements], Transcript) :- communication_reqs_satisfied(Transcript).
-
-requirement_phrase([year1,chem,and,physics,requirements], Transcript) :-
-    year1_chem_phys_reqs_satisfied(Transcript).
-
-requirement_phrase([year1,computer, science, requirements], Transcript) :-
-    year1_comp_sci_reqs_satisfied(Transcript).
-
-year1_comp_sci_reqs_satisfied(Transcript) :- member(cpsc110, Transcript).
-
-% second year requirement_phrases returns true if requirement is met
-
-requirement_phrase([second,year,statistics,requirements], Transcript) :- year2_stat_reqs_satisfied(Transcript).
-
-% Given two courses A and B, checks if it satisfies the communcation requirements
-communication_requirement([A,B]) :- 
-    course(A,C1,X), 
-    course(B,C2,X), 
-    X = communications,
-    dif(A,B),
-    6 is C1 + C2.
-
-% Given a list of courses A, checks if the communication requirements are satisfied
-communication_reqs_satisfied(A) :- 
-    subset(2, A, B),
-    communication_requirement(B).
-
-%%% HELPER FUNCTION
-subset(0, [], []).
-subset(Len, [E|Tail], [E|NTail]):-
-    succ(PLen, Len),
-    (PLen > 0 -> subset(PLen, Tail, NTail) ; NTail=[]).
-subset(Len, [_|Tail], NTail):-
-    subset(Len, Tail, NTail).
-
-% Given two courses A and B, check if it satisfies the first year math requirements. Need a differential and a integral math course
-year1_math_reqs([A,B]) :-
-    course(A, C1, firstYearMath_diff),
-    course(B, C2, firstYearMath_intg),
-    6 is C1 + C2.
-
-% Given two courses A and B, check if it satisfies the first year chem and/or phys requirements. at least 6 credits must be achieved
-year1_chem_phys_reqs([A,B]) :-
-    course(A, C1, firstYearPhysorChem),
-    course(B, C2, firstYearPhysorChem),
-    Z is C1 + C2,
-    6 @=< Z.
-
-year2_stat_reqs([A]) :-
-    course(A, 3, secondYearStat),
-    A = stat200.
-
-
-% Given a transcript (list of courses) A, true if there are two courses B that satisfy the year1_math_reqs
-year1_math_reqs_satisfied(A) :-
-    subset(2, A, B),
-    year1_math_reqs(B).
-
-% Given a transcript (list of courses) A, true if there are two courses B that satisfy the year1_chem_phys_reqs
-year1_chem_phys_reqs_satisfied(A) :-
-    subset(2, A, B),
-    year1_chem_phys_reqs(B).
-
-% Given a transcrip (list of courses) A, true if there is one course that satisfies year2_stat_reqs
-year2_stat_reqs_satisfied(A) :-
-    subset(1, A, B),
-    year2_stat_reqs(B).
-
-% QUERIES TESTED
-% question([engl110, cpsc110], [have, i, met, communications, requirements], Ans).
-% question([engl110,engl112, cpsc110], [have, i, met, communications, requirements], Ans).
-% question([phys101, cpsc110], [have, i, met, communications, requirements], Ans).
-
-% ?- question([engl110, cpsc110, math102, math103], [have, i, met, first, year, math, requirements], Ans).
-% Ans = yes ;
-% false.
-
-% question([chem121, phys101], [have, i, met, year1, chem, and, physics, requirements], Ans).
-
-% question([chem121, phys101, cpsc110], [have, i, met, year1, computer, science, requirements], Ans).
-
-% question([phys107, chem121, engl112, math102, math103, math121, astu100, chem123, math103, phys101, engl110, cpsc110], [can, i, promote, to, second, year], Ans).
-
-
 %======================================================================
-% YEAR2
+%% YEAR2
 
 course(cpsc210, 4, year2compsci).
 course(math210, 4, year2compsci).
@@ -177,6 +66,8 @@ pre_Reqs(X, stat200) :- X = math101; X = math103; X = math105; X = math121.
 pre_Reqs(X, stat302) :- X = math200; X = math226; X = math217; X = math253; X = math263.
 pre_Reqs(X, math302) :- X = math200; X = math226; X = math217; X = math253; X = math263.
 
+%======================================================================
+%% YEAR3 / Year 4
 course(stat305, 3, year3stats).
 course(stat306, 3, year3stats).
 course(math307, 3, upperYearMath).
@@ -195,6 +86,147 @@ pre_Reqs(X, Y, Z, stat306) :- X = math152; X = math221; X = math223, Y = stat200
 pre_Reqs(X, Y, math307) :- X = math152; X = math221; X = math223, Y = math200; Y = math217; Y = math226; Y = math253; Y = math263.
 
 pre_Reqs(X, Y, stat344) :- X = stat200; X = biol300; X = stat241; X = stat251; X = comm291; X = econ325; X = frst231; X = psyc218; X = psyc218; X = psyc366, Y = math302; Y = stat302.
+
+%======================================================================
+%% Requirements 
+
+% Given two courses A and B, checks if it satisfies the communication requirements
+communication_requirement([A,B]) :- 
+    course(A,C1,X), 
+    course(B,C2,X), 
+    X = communications,
+    dif(A,B),
+    6 is C1 + C2.
+
+%% Year 1 requirements
+
+% Given two courses A and B, check if it satisfies the first year math requirements. Need a differential and a integral math course
+year1_math_reqs([A,B]) :-
+    course(A, C1, firstYearMath_diff),
+    course(B, C2, firstYearMath_intg),
+    6 is C1 + C2.
+
+% Given two courses A and B, check if it satisfies the first year chem and/or phys requirements. at least 6 credits must be achieved
+year1_chem_phys_reqs([A,B]) :-
+    course(A, C1, firstYearPhysorChem),
+    course(B, C2, firstYearPhysorChem),
+    Z is C1 + C2,
+    6 @=< Z.
+
+year1_comp_sci_reqs_satisfied(Transcript) :- member(cpsc110, Transcript).
+
+%% Year 2 requirements
+year2_stat_reqs([A]) :-
+    course(A, 3, introStats),
+    A = stat200.
+
+%% Year 3 requirements
+year3_stat_reqs([A,B]) :-
+    course(A, 3, thirdYearStat),
+    course(B, 3, thirdYearStat),
+    A = stat305,
+    B = stat306.
+
+
+%======================================================================
+%% Requirements Satisfied 
+
+% Given a list of courses A, checks if the communication requirements are satisfied
+communication_reqs_satisfied(A) :- 
+    subset(2, A, B),
+    communication_requirement(B).
+
+% Given a transcript (list of courses) A, true if there are two courses B that satisfy the year1_math_reqs
+year1_math_reqs_satisfied(A) :-
+    subset(2, A, B),
+    year1_math_reqs(B).
+
+% Given a transcript (list of courses) A, true if there are two courses B that satisfy the year1_chem_phys_reqs
+year1_chem_phys_reqs_satisfied(A) :-
+    subset(2, A, B),
+    year1_chem_phys_reqs(B).
+
+% Given a transcript (list of courses) A, true if there is one course that satisfies year2_stat_reqs
+year2_stat_reqs_satisfied(A) :-
+    subset(1, A, B),
+    year2_stat_reqs(B).
+
+year3_stat_reqs_satisfied(A) :-
+    subset(2, A, B),
+    year3_stat_reqs(B).
+
+%======================================================================
+% Promotion 
+
+% First year promotion requirements: 24 or more credits in total, which must include 15 or more credits of first-year Science coursework (100-level).
+
+promotion_phrase([second, year], Transcript) :-
+    creditCounter(Transcript, Total), 24 @=< Total,
+    year1_chem_phys_reqs_satisfied(Transcript),
+    year1_math_reqs_satisfied(Transcript),
+    year1_comp_sci_reqs_satisfied(Transcript).
+
+% Second year promotion requirements: 48 or more credits in total, stat 200 completed
+promotion_phrase([third, year], Transcript) :-
+    creditCounter(Transcript, Total), 48 @=< Total,
+    year2_stat_reqs_satisfied(Transcript).
+
+%======================================================================
+% Requirement Phrases
+
+% first year requirement_phrases returns true if requirement is met
+requirement_phrase([first,year,math,requirements], Transcript) :- year1_math_reqs_satisfied(Transcript).
+
+requirement_phrase([year1,chem,and,physics,requirements], Transcript) :-
+    year1_chem_phys_reqs_satisfied(Transcript).
+
+requirement_phrase([year1,computer, science, requirements], Transcript) :-
+    year1_comp_sci_reqs_satisfied(Transcript).
+
+requirement_phrase([communications, requirements], Transcript) :- communication_reqs_satisfied(Transcript).
+
+% second year requirement_phrases returns true if requirement is met
+
+requirement_phrase([second,year,statistics,requirements], Transcript) :- year2_stat_reqs_satisfied(Transcript).
+
+% third year requirement_phrases returns true if requirements is met
+requirement_phrase([third,year,statistics,requirements], Transcript) :- year3_stat_reqs_satisfied(Transcript).
+
+
+%======================================================================
+% Helper 
+subset(0, [], []).
+subset(Len, [E|Tail], [E|NTail]):-
+    succ(PLen, Len),
+    (PLen > 0 -> subset(PLen, Tail, NTail) ; NTail=[]).
+subset(Len, [_|Tail], NTail):-
+    subset(Len, Tail, NTail).
+
+creditCounter([],0).
+creditCounter([H|T], Total) :-
+    course(H, C1, _), creditCounter(T, T1), Total is C1+T1.
+
+%======================================================================
+% Questions 
+
+question(Transcript, [can, i, promote, to | Year], yes) :- promotion_phrase(Year,Transcript).
+
+question(Transcript, [have, i, met | Req], yes) :- requirement_phrase(Req, Transcript).
+
+% QUERIES TESTED
+% question([engl110, cpsc110], [have, i, met, communications, requirements], Ans).
+% question([engl110,engl112, cpsc110], [have, i, met, communications, requirements], Ans).
+% question([phys101, cpsc110], [have, i, met, communications, requirements], Ans).
+
+% ?- question([engl110, cpsc110, math102, math103], [have, i, met, first, year, math, requirements], Ans).
+% Ans = yes ;
+% false.
+
+% question([chem121, phys101], [have, i, met, year1, chem, and, physics, requirements], Ans).
+
+% question([chem121, phys101, cpsc110], [have, i, met, year1, computer, science, requirements], Ans).
+
+% question([phys107, chem121, engl112, math102, math103, math121, astu100, chem123, math103, phys101, engl110, cpsc110], [can, i, promote, to, second, year], Ans).
 
 % PRE-REQ QUESTIONS
 % =========================================================================
