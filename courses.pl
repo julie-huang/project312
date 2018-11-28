@@ -56,15 +56,16 @@ course(stat302, 3, introProbability).
 course(math302, 3, introProbability).
 course(fren101, 3, artsElective).
 course(fmst210, 3, artsElective).
+course(chin111, 3, artsElective).
 
 pre_Reqs([cpsc110], cpsc210).
-pre_Reqs([X], math210) :- X = math101; X = math103; X = math105.
-pre_Reqs([X], math200) :- X = math101; X = math103; X = math105; X = math121.
-pre_Reqs([X], math220) :- X = math101; X = math103; X = math105; X = math121.
-pre_Reqs([X], math221) :- X = math100; X = math102; X = math104; X = math120; X = math180; X = math184; X = math101; X = math103; X = math105; X = math121.
-pre_Reqs([X], stat200) :- X = math101; X = math103; X = math105; X = math121.
-pre_Reqs([X], stat302) :- X = math200; X = math226; X = math217; X = math253; X = math263.
-pre_Reqs([X], math302) :- X = math200; X = math226; X = math217; X = math253; X = math263.
+pre_Reqs([X], math210) :- member(X, [math101, math103, math105]).
+pre_Reqs([X], math200) :- member(X, [math101, math103, math105, math121]).
+pre_Reqs([X], math220) :- member(X, [math101, math103, math105, math121]).
+pre_Reqs([X], math221) :- member(X, [math100, math102, math104, math120, math180, math184, math101, math103, math105, math121]).
+pre_Reqs([X], stat200) :- member(X, [math101, math103, math105, math121]).
+pre_Reqs([X], stat302) :- member(X, [math200, math226, math217, math253, math263]).
+pre_Reqs([X], math302) :- member(X, [math200, math226, math217, math253, math263]).
 
 %======================================================================
 %% YEAR3 / Year 4
@@ -72,15 +73,57 @@ course(stat305, 3, year3stats).
 course(stat306, 3, year3stats).
 course(math307, 3, upperYearMath).
 course(math303, 3, upperYearMath).
-course(stat404, 3, upperYearStats).
-course(stat443, 3, upperYearStats).
-course(stat406, 3, upperYearStats).
-course(stat450, 3, upperYearStats).
-course(stat300, 3, upperYearStats).
-course(stat344, 3, upperYearStats).
+course(math340, 3, upperYearMath).
+course(math360, 3, upperYearMath).
+course(stat404, 3, experimentStats).
+course(stat443, 3, fourHundredLevelStats).
+course(stat406, 3, fourHundredLevelStats).
+course(stat450, 3, fourHundredLevelStats).
+course(stat300, 3, threeHundredLevelStats).
+course(stat344, 3, threeHundredLevelStats).
+course(stat321, 3, threeHundredLevelStats).
 
-% pre_Reqs([X, Y], stat305) :- 
-%     X = stat200; X = biol300; X = stat241; X = stat251; X = comm291; X = econ325; X = frst231; X = psyc218; X = psyc218; X = psyc366, 
+% thematic concentration
+course(cpsc302, 3, cpscThematic).
+course(cpsc303, 3, cpscThematic).
+course(cpsc304, 3, cpscThematic).
+course(cpsc312, 3, cpscThematic).
+course(cpsc320, 3, cpscThematic).
+course(cpsc322, 3, cpscThematic).
+course(cpsc344, 3, cpscThematic).
+course(cpsc404, 3, cpscThematic).
+course(cpsc405, 3, cpscThematic).
+course(cpsc405, 3, cpscThematic).
+course(cpsc406, 3, cpscThematic).
+course(cpsc422, 3, cpscThematic).
+course(cpsc455, 3, cpscThematic).
+
+course(econ301, 3, econThematic).
+course(econ302, 3, econThematic).
+course(econ304, 3, econThematic).
+course(econ305, 3, econThematic).
+course(econ306, 3, econThematic).
+course(econ307, 3, econThematic).
+course(econ320, 3, econThematic).
+course(econ345, 3, econThematic).
+course(econ355, 3, econThematic).
+course(econ356, 3, econThematic).
+course(econ370, 3, econThematic).
+course(econ420, 3, econThematic).
+course(econ421, 3, econThematic).
+course(econ425, 3, econThematic).
+course(econ426, 3, econThematic).
+
+course(psyc303, 3, psycThematic).
+course(psyc314, 3, psycThematic).
+course(psyc317, 3, psycThematic).
+course(psyc323, 3, psycThematic).
+course(psyc325, 3, psycThematic).
+course(psyc359, 3, psycThematic).
+course(psyc401, 3, psycThematic).
+
+% pre_Reqs([X, Y], stat305) :-
+%     X = stat200; X = biol300; X = stat241; X = stat251; X = comm291; X = econ325; X = frst231; X = psyc218; X = psyc218; X = psyc366,
 %     Y = math302; Y = stat302.
 
 pre_Reqs([X,Y], stat305) :-
@@ -88,18 +131,19 @@ pre_Reqs([X,Y], stat305) :-
     member(Y, [math302, stat302]).
 
 pre_Reqs([X, Y, Z], stat306) :- 
-    X = math152; X = math221; X = math223, 
-    Y = stat200; Y = stat241; Y = stat251; Y = stat300; Y = biol300; Y = comm291; Y = econ325; Y = econ327; Y = frst231; Y = psyc218, 
-    Z = math302; Z = stat302.
+    member(X, [math152, math221, math223]),
+    member(Y, [stat200,stat241,stat251,stat300,biol300,comm291,econ325,econ327,frst231,psyc218]),
+    member(Z, [math302, stat302]).
 
 pre_Reqs([X, Y], math307) :- 
-    X = math152; X = math221; X = math223, 
-    Y = math200; Y = math217; Y = math226; Y = math253; Y = math263.
+    member(X, [math152, math221, math223]),
+    member(Y, [math200, math217, math226, math253, math263]).
 
 pre_Reqs([X, Y], stat344) :- 
-    X = stat200; X = biol300; X = stat241; X = stat251; X = comm291; X = econ325; X = frst231; X = psyc218; X = psyc218; X = psyc366, 
-    Y = math302; Y = stat302.
+    member(X, [stat200,biol300,stat241,stat251,comm291,econ325,frst231,psyc218,psyc218,psyc366]),
+    member(Y, [math302, stat302]).
 
+% returns true when Pairs is the list of pair combos from L1 and L2.
 pair(L1, L2, Pairs):-
   findall({A,B}, (member(A, L1), member(B, L2)), Pairs).
 
@@ -156,6 +200,29 @@ year3_stat_reqs([A,B]) :-
     A = stat305,
     B = stat306.
 
+%% Year 4 requirements; 6 credits of stat300+, 6 credits of stat400+
+year4_stat_reqs([A,B,C,D,E]) :-
+    course(A, 3, experimentStats),
+    course(B, 3, fourHundredLevelStats),
+    course(C, 3, fourHundredLevelStats), dif(B,C),
+    course(D, 3, threeHundredLevelStats),
+    course(E, 3, threeHundredLevelStats), dif(D,E);
+    course(D, 3, threeHundredLevelStats), course(E, 3, fourHundredLevelStats), dif(D,E);
+    course(D, 3, fourHundredLevelStats), course(E, 3, fourHundredLevelStats), dif(D,E).
+
+% need math307, math303, math300+
+upper_math_reqs([A,B,C]) :-
+    course(A, 3, upperYearMath),
+    course(B, 3, upperYearMath),
+    course(C, 3, upperYearMath),
+    A = math303, B = math307, dif(B,C), dif(A,C), dif(A,B).
+
+thematic_reqs([A,B,C]) :-
+    course(A, 3, cpscThematic), course(B, 3, cpscThematic), course(C, 3, cpscThematic),dif(A,B), dif(A,C), dif(B,C);
+    course(A, 3, econThematic), course(B, 3, econThematic), course(C, 3, econThematic), dif(A,B), dif(A,C), dif(B,C);
+    course(A, 3, psycThematic), course(B, 3, psycThematic), course(C, 3, psycThematic), dif(A,B), dif(A,C), dif(B,C).
+
+
 %======================================================================
 %% Requirements Satisfied 
 
@@ -195,6 +262,17 @@ year3_stat_reqs_satisfied(A) :-
     subset(2, A, B),
     year3_stat_reqs(B).
 
+year4_stat_reqs_satisfied(A) :-
+    subset(5, A, B),
+    year4_stat_reqs(B).
+
+upper_math_reqs_satisfied(A) :-
+    subset(3, A, B),
+    upper_math_reqs(B).
+
+thematic_reqs_satisfied(A) :-
+    subset(3, A, B),
+    thematic_reqs(B).
 %======================================================================
 % Promotion 
 
@@ -211,7 +289,7 @@ promotion_phrase([third, year], Transcript) :-
     creditCounter(Transcript, Total), 48 @=< Total,
     year2_stat_reqs_satisfied(Transcript).
 
-% THird year promotion requirements: 72 credits or more in tota, stat 305 and stat 306, completed all specified courses in specialization listed for first and second year
+% Third year promotion requirements: 72 credits or more in total, stat 305 and stat 306, completed all specified courses in specialization listed for first and second year
 promotion_phrase([fourth, year], Transcript) :-
     creditCounter(Transcript, Total), 72 @=< Total,
     % communication satisfied
@@ -227,6 +305,17 @@ promotion_phrase([fourth, year], Transcript) :-
     year2_prob_req_satisfied(transcript),
     % third year requirement
     year3_stat_reqs_satisfied(Transcript).
+
+% graduation requirements
+graduation_phrase([graduate], Transcript) :-
+    creditCounter(Transcript, Total), 120 @=< Total,
+    promotion_phrase([fourth, year], Transcript),
+    year4_stat_reqs_satisfied(Transcript),
+    upper_math_reqs_satisfied(Transcript),
+    thematic_reqs_satisfied(Transcript).
+
+
+
 
     
 %======================================================================
@@ -265,16 +354,22 @@ creditCounter([H|T], Total) :-
     course(H, C1, _), creditCounter(T, T1), Total is C1+T1.
 
 %======================================================================
-% Questions 
+% Questions
+
+% TRANSCRIPT [engl110, engl112, math102, math103, phys101, chem123, fren101, fmst231, chin111, stat200 stat300, stat344, cpsc303, cpsc302, cpsc304,cpsc320,cpsc322,econ301, econ304, econ306, econ320, econ307 cpsc404, math303, stat404, stat450, cpsc210, cpsc110, math200, math220, math221, wrds150, engl100, engl111, stat302, math100, math184, math180]
 
 question(Transcript, [can, i, promote, to | Year], yes) :- promotion_phrase(Year,Transcript).
 
 question(Transcript, [have, i, met | Req], yes) :- requirement_phrase(Req, Transcript).
 
+question(Transcript, [can, i | Graduate], yes) :- graduation_phrase(Graduate, Transcript).
+
 % QUERIES TESTED
 % question([engl110, cpsc110], [have, i, met, communications, requirements], Ans).
 % question([engl110,engl112, cpsc110], [have, i, met, communications, requirements], Ans).
 % question([phys101, cpsc110], [have, i, met, communications, requirements], Ans).
+
+
 
 % ?- question([engl110, cpsc110, math102, math103], [have, i, met, first, year, math, requirements], Ans).
 % Ans = yes ;
@@ -286,21 +381,35 @@ question(Transcript, [have, i, met | Req], yes) :- requirement_phrase(Req, Trans
 
 % question([phys107, chem121, engl112, math102, math103, math121, astu100, chem123, math103, phys101, engl110, cpsc110], [can, i, promote, to, second, year], Ans).
 
+% question([engl110, engl112, math102, math103, phys101, chem123, fren101, fmst231, chin111, stat200, stat300, stat344, cpsc303, cpsc302, cpsc304,cpsc320,cpsc322,econ301, econ304, econ306, econ320, econ307, cpsc404, math303, stat404, stat450, cpsc210, cpsc110, math200, math220, math221, wrds150, engl100, engl111, stat302, math100, math184, math180, scie113, scie300, stat251, stat241], [can, i | graduate], yes).
+
 % PRE-REQ QUESTIONS
 % =========================================================================
 
 % pre_Reqs(X, Y) is true if X is a pre-req for course Y
-pre_Reqs(X, math200) :- X = math101; X = math103; X = math105; X = math121.
+% pre_Reqs(X, math200) :- X = math101; X = math103; X = math105; X = math121.
 
 question([what, are, pre-reqs, for | Course], C) :- pre_Reqs(C, Course).
 
-question(Transcript, [do, i, have, pre-reqs, for | Course], yes) :- have_pre_reqs(Course, Transcript).
+question(Transcript, [do, i, have, pre-reqs, for | Course], yes) :-
+    have_pre_reqs(Course, Transcript).
 
+question(Transcript, [what, courses, do, i, need, to, take, for | Course], Ans) :- missing_courses(Course, Transcript, Ans).
+
+question(Transcript, [can, i, take | Course], yes) :-
+    have_pre_reqs(Course, Transcript).
 
 have_pre_reqs(Course, Transcript) :- 
     course(Course,_,_),
     pre_Reqs(P, Course),
     contained_in(P, Transcript).
+
+% missing_courses(Course, Transcript, Ans) returns true if Ans is a list of coures that are not in the Transcript but are pre-reqs for Course
+missing_courses(Course, Transcript, Ans) :-
+    course(Course,_,_),
+    pre_Reqs(P, Course),
+    \+ contained_in(P, Transcript),
+    Ans = P.
 
 % contained_in(L1, L2) succeeds if all elements of L1 are contained in L2
 contained_in(L1, L2) :- maplist(contains(L2), L1).
@@ -310,6 +419,8 @@ contains(L, X) :- member(X, L).
 % question([math101, engl112], [do, i, have, pre-reqs, for | math200], Answer).
 % question([math111, engl112], [do, i, have, pre-reqs, for | math200], Answer).
 % question([what, are, pre-reqs, for | math200], C).
+% question([math111, engl112], [can, i, take | math200], Answer).
+% question([engl110, engl112], [what, courses, do, i, need, to, take, for | math200], Ans).
 
 
 %=========================================================================
