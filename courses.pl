@@ -79,7 +79,6 @@ course(stat450, 3, upperYearStats).
 course(stat300, 3, upperYearStats).
 course(stat344, 3, upperYearStats).
 
-
 pre_Reqs(X, Y, stat305) :- X = stat200; X = biol300; X = stat241; X = stat251; X = comm291; X = econ325; X = frst231; X = psyc218; X = psyc218; X = psyc366, Y = math302; Y = stat302.
 
 pre_Reqs(X, Y, Z, stat306) :- X = math152; X = math221; X = math223, Y = stat200; Y = stat241; Y = stat251; Y = stat300; Y = biol300; Y = comm291; Y = econ325; Y = econ327; Y = frst231; Y = psyc218, Z = math302; Z = stat302.
@@ -117,17 +116,29 @@ year1_chem_phys_reqs([A,B]) :-
 year1_comp_sci_reqs_satisfied(Transcript) :- member(cpsc110, Transcript).
 
 %% Year 2 requirements
+
+year2_cpsc_math_req([A]) :-
+    course(A, 3, year2compsci).
+
 year2_stat_reqs([A]) :-
     course(A, 3, introStats),
     A = stat200.
 
+year2_math_reqs([A,B,C]) :-
+    course(A, 3, year2math),
+    course(B, 3, year2math),
+    course(C, 3, year2math),
+    dif(A,B), dif(B,C), dif(A,C).
+
+year2_prob_req([A]):-
+    course(A, 3, introProbability).
+
 %% Year 3 requirements
 year3_stat_reqs([A,B]) :-
-    course(A, 3, thirdYearStat),
-    course(B, 3, thirdYearStat),
+    course(A, 3, year3stats),
+    course(B, 3, year3stats),
     A = stat305,
     B = stat306.
-
 
 %======================================================================
 %% Requirements Satisfied 
@@ -143,6 +154,10 @@ year1_math_reqs_satisfied(A) :-
     year1_math_reqs(B).
 
 % Given a transcript (list of courses) A, true if there are two courses B that satisfy the year1_chem_phys_reqs
+year2_cpsc_math_req_satisfied(A) :-
+    subset(1, A, B),
+    year2_cpsc_math_req(B).
+
 year1_chem_phys_reqs_satisfied(A) :-
     subset(2, A, B),
     year1_chem_phys_reqs(B).
@@ -151,6 +166,14 @@ year1_chem_phys_reqs_satisfied(A) :-
 year2_stat_reqs_satisfied(A) :-
     subset(1, A, B),
     year2_stat_reqs(B).
+
+year2_math_reqs_satisfied(A) :-
+    subset(3, A, B),
+    year2_math_reqs(B).    
+
+year2_prob_req_satisfied(A) :-
+    subset(1, A, B),
+    year2_prob_req(B).
 
 year3_stat_reqs_satisfied(A) :-
     subset(2, A, B),
@@ -172,6 +195,24 @@ promotion_phrase([third, year], Transcript) :-
     creditCounter(Transcript, Total), 48 @=< Total,
     year2_stat_reqs_satisfied(Transcript).
 
+% THird year promotion requirements: 72 credits or more in tota, stat 305 and stat 306, completed all specified courses in specialization listed for first and second year
+promotion_phrase([fourth, year], Transcript) :-
+    creditCounter(Transcript, Total), 72 @=< Total,
+    % communication satisfied
+    communication_reqs_satisfied(Transcript),
+    % first year specified courses
+    year1_chem_phys_reqs_satisfied(Transcript),
+    year1_math_reqs_satisfied(Transcript),
+    year1_comp_sci_reqs_satisfied(Transcript),
+    % second year specified courses
+    year2_cpsc_math_req_satisfied(Transcript),
+    year2_stat_reqs_satisfied(Transcript),
+    year2_math_reqs_satisfied(Transcript),
+    year2_prob_req_satisfied(transcript),
+    % third year requirement
+    year3_stat_reqs_satisfied(Transcript).
+
+    
 %======================================================================
 % Requirement Phrases
 
