@@ -79,6 +79,7 @@ course(stat450, 3, upperYearStats).
 course(stat300, 3, upperYearStats).
 course(stat344, 3, upperYearStats).
 
+
 pre_Reqs(X, Y, stat305) :- X = stat200; X = biol300; X = stat241; X = stat251; X = comm291; X = econ325; X = frst231; X = psyc218; X = psyc218; X = psyc366, Y = math302; Y = stat302.
 
 pre_Reqs(X, Y, Z, stat306) :- X = math152; X = math221; X = math223, Y = stat200; Y = stat241; Y = stat251; Y = stat300; Y = biol300; Y = comm291; Y = econ325; Y = econ327; Y = frst231; Y = psyc218, Z = math302; Z = stat302.
