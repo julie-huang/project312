@@ -132,10 +132,6 @@ course(psyc325, 3, psycThematic).
 course(psyc359, 3, psycThematic).
 course(psyc401, 3, psycThematic).
 
-% pre_Reqs([X, Y], stat305) :-
-%     X = stat200; X = biol300; X = stat241; X = stat251; X = comm291; X = econ325; X = frst231; X = psyc218; X = psyc218; X = psyc366,
-%     Y = math302; Y = stat302.
-
 pre_Reqs([X,Y], stat305) :-
     member(X, [stat200, biol300, stat241, stat251, comm291, econ325, frst231, psyc218]),
     member(Y, [math302, stat302]).
@@ -466,6 +462,39 @@ question(Transcript, [do, i, have, pre-reqs, for | Course], yes) :-
     have_pre_reqs(Course, Transcript).
 
 question(Transcript, [what, courses, do, i, need, to, take, for | Course], Ans) :- missing_courses(Course, Transcript, Ans).
+
+question(Transcript, [what, requirements, am, i, missing, for | Year], Ans) :- missing_requirement_phrase(Year, Transcript, Ans).
+
+missing_requirement_phrase([second,year,promotion], Transcript, Ans) :- year2_missing_requirements(Transcript, Ans).
+
+year2_missing_requirements(Transcript, Ans) :-
+    (\+ year2creditMinReq(Transcript) -> 
+        M1 = '24 minimum credit minimum not satisfied';
+        M1 = ''),
+    (\+ year1_chem_phys_reqs_satisfied(Transcript) -> 
+        M2 = 'chem/phys requirement not satisfied';
+        M2 = ''),
+    (\+ year1_math_reqs_satisfied(Transcript) -> 
+        M3 = 'year 1 math requirement not satisfied';
+        M3 = ''),
+    (\+ year1_comp_sci_reqs_satisfied(Transcript) -> 
+        M4 = 'year 1 cpsc requirement not satisfied';
+        M4 = ''),
+    ( M1 == M2, M2 == M3, M3 == M4 -> Ans = ['All second year requirements satisfied'];
+        exclude( =(''), [M1, M2, M3, M4], Ans)).
+
+missing_requirement_phrase([third,year,promotion], Transcript, Ans) :- year3_missing_requirements(Transcript, Ans).
+
+year3_missing_requirements(Transcript, Ans) :-
+    (\+ year2_stat_reqs_satisfied(Transcript) -> 
+            M1 = 'year 2 statistics requirement not satisfied';
+            M1 = ''),
+    ( creditCounter(Transcript, Total), 48 >= Total -> 
+        M2 = '48 credit minimum not satisfied';
+        M2 = ''),
+    exclude( =(''), [M1, M2], Year2),
+    year2_missing_requirements(Transcript, Year1),
+    union(Year1, Year2, Ans). 
 
 question(Transcript, [can, i, take | Course], yes) :-
     have_pre_reqs(Course, Transcript).
