@@ -11,7 +11,6 @@ course(chin131, 3, artsElective).
 course(chin133, 3, artsElective).
 course(anth203, 3, artsElective).
 course(anth205, 3, artsElective).
-course(soci100, 6, artsElective).
 course(soci200, 3, artsElective).
 course(asia101, 3, artsElective).
 course(crwr200, 3, artsElective).
@@ -286,15 +285,31 @@ year2_prob_req_satisfied(A) :-
     year2_prob_req(B).
 
 year2_promotion_satisfied(Transcript) :-
-    hasAtLeast24Credits(Transcript),
+    year2creditMinReq(Transcript),
     year1_chem_phys_reqs_satisfied(Transcript),
     year1_math_reqs_satisfied(Transcript),
     year1_comp_sci_reqs_satisfied(Transcript).
 
 
 % most courses are 3-credits;  8 creds of chem + 4 creds of cpsc, 12 creds of others which is 4 courses each worth 3 credits, at least 7 courses
-% 4 creds of chem, 20 creds = 7, needs to be at least 8 courses taken
-hasAtLeast24Credits(Transcript) :- length(Transcript, X), 7 @=< X.
+% 4 creds of chem, 4 creds of cpsc, 16 creds = 6, needs to be at least 8 courses taken
+% 4 credits of cpsc, 20 credits = 7 coures, needs to be at least 8 course
+hasAtLeast24Credits(Transcript) :-
+member(chem121, Transcript), member(chem123, Transcript), member(cpsc110, Transcript), length(Transcript, X), 7 @=< X.
+
+hasAtLeast24Credits1(Transcript) :-
+member(chem121, Transcript); member(chem123, Transcript), member(cpsc110, Transcript), length(Transcript, X), 8 @=< X.
+
+hasAtLeast24Credits2(Transcript) :-
+\+member(chem121, Transcript), \+member(chem123, Transcript), member(cpsc110, Transcript), length(Transcript, X), 7 @=< X.
+
+
+year2creditMinReq(Transcript) :- hasAtLeast24Credits2(Transcript); hasAtLeast24Credits1(Transcript); hasAtLeast24Credits(Transcript).
+
+year3_promotion_satisfied(Transcript) :-
+    year2_stat_reqs_satisfied(Transcript),
+    year2_promotion_satisfied(Transcript),
+    length(Transcript, X), 8 @=< X.
 
 
 year3_stat_reqs_satisfied(A) :-
@@ -321,18 +336,14 @@ arts_reqs_satisfied(A) :-
 % First year promotion requirements: 24 or more credits in total, which must include 15 or more credits of first-year Science coursework (100-level).
 
 promotion_phrase([second, year], Transcript) :-
-    hasAtLeast24Credits(Transcript),
-    year1_chem_phys_reqs_satisfied(Transcript),
-    year1_math_reqs_satisfied(Transcript),
-    year1_comp_sci_reqs_satisfied(Transcript).
+    year2_promotion_satisfied(Transcript). 
 
 % Second year promotion requirements: 48 or more credits in total, stat 200 completed
 promotion_phrase([third, year], Transcript) :-
-    creditCounter(Transcript, Total), 48 @=< Total,
-    year2_stat_reqs_satisfied(Transcript).
+    year3_promotion_satisfied(Transcript).
 
 % Third year promotion requirements: 72 credits or more in total, stat 305 and stat 306, completed all specified courses in specialization listed for first and second year
-promotion_phrase([fourth, year], Transcript) :-
+/* promotion_phrase([fourth, year], Transcript) :-
     creditCounter(Transcript, Total), 72 @=< Total,
     % communication satisfied
     communication_reqs_satisfied(Transcript),
@@ -346,15 +357,31 @@ promotion_phrase([fourth, year], Transcript) :-
     year2_math_reqs_satisfied(Transcript),
     year2_prob_req_satisfied(transcript),
     % third year requirement
-    year3_stat_reqs_satisfied(Transcript).
+    year3_stat_reqs_satisfied(Transcript). */
 
-% graduation requirements
+promotion_phrase([fourth, year], Transcript) :-
+    year2_promotion_satisfied(Transcript),
+    year3_promotion_satisfied(Transcript),
+    year3_stat_reqs_satisfied(Transcript),
+    length(Transcript, X), 23 @=< X.
+
+
+/* % graduation requirements
 graduation_phrase([graduate], Transcript) :-
     creditCounter(Transcript, Total), 120 @=< Total,
     promotion_phrase([fourth, year], Transcript),
     year4_stat_reqs_satisfied(Transcript),
     upper_math_reqs_satisfied(Transcript),
     arts_reqs_satisfied(Transcript),
+    thematic_reqs_satisfied(Transcript). */
+
+graduation_phrase([graduate], Transcript) :-
+    length(Transcript, X), 39 @=< X,
+    promotion_phrase([fourth, year], Transcript),
+    year4_stat_reqs_satisfied(Transcript),
+    upper_math_reqs_satisfied(Transcript),
+    arts_reqs_satisfied(Transcript),
+    communication_reqs_satisfied(Transcript),
     thematic_reqs_satisfied(Transcript).
 
 
