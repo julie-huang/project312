@@ -469,7 +469,7 @@ missing_requirement_phrase([second,year,promotion], Transcript, Ans) :- year2_mi
 
 year2_missing_requirements(Transcript, Ans) :-
     (\+ year2creditMinReq(Transcript) -> 
-        M1 = '24 minimum credit minimum not satisfied';
+        M1 = '24 credit minimum not satisfied';
         M1 = ''),
     (\+ year1_chem_phys_reqs_satisfied(Transcript) -> 
         M2 = 'chem/phys requirement not satisfied';
@@ -493,8 +493,50 @@ year3_missing_requirements(Transcript, Ans) :-
         M2 = '48 credit minimum not satisfied';
         M2 = ''),
     exclude( =(''), [M1, M2], Year2),
-    year2_missing_requirements(Transcript, Year1),
+    year2_missing_requirements(Transcript, Missing),
+    exclude( =('24 credit minimum not satisfied'), Missing, Year1),
     union(Year1, Year2, Ans). 
+
+missing_requirement_phrase([fourth,year,promotion], Transcript, Ans) :- year4_missing_requirements(Transcript, Ans).
+
+
+year4_missing_requirements(Transcript,Ans):-
+    (\+ year3_stat_reqs_satisfied(Transcript) -> 
+            M1 = 'year 3 statistics requirement not satisfied';
+            M1 = ''),
+    (creditCounter(Transcript, Total), 72 >= Total -> 
+        M2 = '72 credit minimum not satisfied';
+        M2 = ''),
+    exclude( =(''), [M1, M2], Year3),
+    year3_missing_requirements(Transcript, Missing),
+    exclude( =('48 credit minimum not satisfied'), Missing, Year12),
+    union(Year12, Year3, Ans). 
+
+missing_requirement_phrase([graduation], Transcript, Ans) :- graduation_missing_requirements(Transcript, Ans).
+
+graduation_missing_requirements(Transcript, Ans):-
+    (\+ year4_stat_reqs_satisfied(Transcript) -> 
+            M1 = 'year 4 statistics requirements not satisfied';
+            M1 = ''),
+    (\+ upper_math_reqs_satisfied(Transcript) -> 
+            M2 = 'upper level math requirements not satisfied';
+            M2 = ''),
+    (\+ arts_reqs_satisfied(Transcript) -> 
+            M3 = 'arts requirement not satisfied';
+            M3 = ''),
+    (\+ communication_reqs_satisfied(Transcript) -> 
+            M4 = 'communication requirement not satisfied';
+            M4 = ''),
+    (\+ thematic_reqs_satisfied(Transcript) -> 
+            M5 = 'thematic concentration requirement not satisfied';
+            M5 = ''),
+    ( creditCounter(Transcript, Total), 120 >= Total -> 
+        M6 = '120 credit minimum not satisfied';
+        M6 = ''),
+    exclude( =(''), [M1, M2, M3,M4, M5, M6], Year4),
+    year4_missing_requirements(Transcript, Missing),
+    exclude( =('72 credit minimum not satisfied'), Missing, Year123),
+    union(Year123, Year4, Ans).
 
 question(Transcript, [can, i, take | Course], yes) :-
     have_pre_reqs(Course, Transcript).
