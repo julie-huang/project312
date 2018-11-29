@@ -233,6 +233,8 @@ thematic_reqs([A,B,C]) :-
     course(A, 3, econThematic), course(B, 3, econThematic), course(C, 3, econThematic), dif(A,B), dif(A,C), dif(B,C);
     course(A, 3, psycThematic), course(B, 3, psycThematic), course(C, 3, psycThematic), dif(A,B), dif(A,C), dif(B,C).
 
+
+
 arts_requirements(Transcript) :-
     onlyArtsCreditCounter(Transcript, Arts, ArtCredit),  12 @=< ArtCredit.
 
@@ -240,6 +242,9 @@ arts_requirements(Transcript) :-
 onlyArtsCreditCounter(Transcript, Arts, Total) :-
     findall(X, (course(X, _, artsElective), member(X, Transcript)), Arts),
     creditCounter(Arts, Total).
+
+% returns true if Breadth are coures in a transcript that are not in cpsc/math/stat, and are not used in any other requirements
+
 
 % findall(X, (course(X, _, artsElective), member(X, [chin131, chin133, math101])), Arts).
 
@@ -280,6 +285,18 @@ year2_prob_req_satisfied(A) :-
     subset(1, A, B),
     year2_prob_req(B).
 
+year2_promotion_satisfied(Transcript) :-
+    hasAtLeast24Credits(Transcript),
+    year1_chem_phys_reqs_satisfied(Transcript),
+    year1_math_reqs_satisfied(Transcript),
+    year1_comp_sci_reqs_satisfied(Transcript).
+
+
+% most courses are 3-credits;  8 creds of chem + 4 creds of cpsc, 12 creds of others which is 4 courses each worth 3 credits, at least 7 courses
+% 4 creds of chem, 20 creds = 7, needs to be at least 8 courses taken
+hasAtLeast24Credits(Transcript) :- length(Transcript, X), 7 @=< X.
+
+
 year3_stat_reqs_satisfied(A) :-
     subset(2, A, B),
     year3_stat_reqs(B).
@@ -304,7 +321,7 @@ arts_reqs_satisfied(A) :-
 % First year promotion requirements: 24 or more credits in total, which must include 15 or more credits of first-year Science coursework (100-level).
 
 promotion_phrase([second, year], Transcript) :-
-    creditCounter(Transcript, Total), 24 @=< Total,
+    hasAtLeast24Credits(Transcript),
     year1_chem_phys_reqs_satisfied(Transcript),
     year1_math_reqs_satisfied(Transcript),
     year1_comp_sci_reqs_satisfied(Transcript).
@@ -356,6 +373,9 @@ requirement_phrase([year1,computer, science, requirements], Transcript) :-
 
 requirement_phrase([communications, requirements], Transcript) :- communication_reqs_satisfied(Transcript).
 
+requirement_phrase([second, year, promotion, requirements], Transcript) :-
+    year2_promotion_satisfied(Transcript).
+
 % second year requirement_phrases returns true if requirement is met
 
 requirement_phrase([second,year,statistics,requirements], Transcript) :- year2_stat_reqs_satisfied(Transcript).
@@ -389,7 +409,8 @@ question(Transcript, [have, i, met | Req], yes) :- requirement_phrase(Req, Trans
 question(Transcript, [can, i | Graduate], yes) :- graduation_phrase(Graduate, Transcript).
 
 % QUERIES TESTED
-% question([engl110, cpsc110], [have, i, met, communications, requirements], Ans).
+% question([phys107, chem121, engl112, math102, math103, math121, astu100, chem123, math103, phys101, engl110, cpsc110], [have, i, met, communications, requirements], Ans).
+
 % question([engl110,engl112, cpsc110], [have, i, met, communications, requirements], Ans).
 % question([phys101, cpsc110], [have, i, met, communications, requirements], Ans).
 
@@ -401,7 +422,8 @@ question(Transcript, [can, i | Graduate], yes) :- graduation_phrase(Graduate, Tr
 
 % question([chem121, phys101, cpsc110], [have, i, met, year1, computer, science, requirements], Ans).
 
-% question([phys107, chem121, engl112, math102, math103, math121, astu100, chem123, math103, phys101, engl110, cpsc110], [can, i, promote, to, second, year], Ans).
+%  question([phys107, chem121, engl112, math102, math103, math121, astu100, chem123, math103, phys101, engl110, cpsc110], [have, i, met,second,year, promotion, requirements], Ans).
+
 
 % question([engl110, engl112, math102, math103, phys101, chem123, fren101, fmst231, chin111, stat200, stat300, stat344, cpsc303, cpsc302, cpsc304,cpsc320,cpsc322,econ301, econ304, econ306, econ320, econ307, cpsc404, math303, stat404, stat450, cpsc210, cpsc110, math200, math220, math221, wrds150, engl100, engl111, stat302, math100, math184, math180, scie113, scie300, stat251, stat241], [can, i | graduate], yes).
 
