@@ -384,15 +384,10 @@ creditCounter([H|T], Total) :-
 contained_in(L1, L2) :- maplist(contains(L2), L1).
 contains(L, X) :- member(X, L).
 
-%=========================================================================
+%==================================================================
+% Adapted code from Lecture27
 
-/* q(Ans) :-
-write("enter your courses: "), flush_output(current_output),
-readln(Transcript),
-write("Ask me: "), flush_output(current_output),
-readln(Ln),
-question(Transcript,Ln,Ans),
-member(Ln,[[],['?'],['.']]). */
+% Get input from user
 
 q(Ans) :-
 write("enter your course as a list: "), flush_output(current_output),
