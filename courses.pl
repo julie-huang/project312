@@ -64,12 +64,14 @@ year4_stat_reqs([A,B,C,D,E]) :-
     course(D, 3, threeHundredLevelStats), course(E, 3, fourHundredLevelStats), dif(D,E);
     course(D, 3, fourHundredLevelStats), course(E, 3, fourHundredLevelStats), dif(D,E).
 
-% returns true if A is math303, B is math307, and C is any other 300-level math
+% returns true if math303 and math307 is a member of [A,B,C] and the remaining is any other 300-level math
 upper_math_reqs([A,B,C]) :-
     course(A, 3, upperYearMath),
     course(B, 3, upperYearMath),
     course(C, 3, upperYearMath),
-    A = math303, B = math307, dif(B,C), dif(A,C), dif(A,B).
+    member(math307, [A,B,C]),
+    member(math303, [A,B,C]),
+    dif(A,B), dif(A,C), dif(B,C).
 
 % returns true if A,B,C are courses in the same thematic concentration
 thematic_reqs([A,B,C]) :-
@@ -237,20 +239,7 @@ requirement_phrase([third,year,statistics,requirements], Transcript) :- year3_st
 
 
 %======================================================================
-% Helper 
-subset(0, [], []).
-subset(Len, [E|Tail], [E|NTail]):-
-    succ(PLen, Len),
-    (PLen > 0 -> subset(PLen, Tail, NTail) ; NTail=[]).
-subset(Len, [_|Tail], NTail):-
-    subset(Len, Tail, NTail).
-
-creditCounter([],0).
-creditCounter([H|T], Total) :-
-    course(H, C1, _), creditCounter(T, T1), Total is C1+T1.
-
-%======================================================================
-% Questions Tested
+% Questions
 
 question(Transcript, [can, i, promote, to | Year], yes) :- promotion_phrase(Year,Transcript).
 
@@ -272,26 +261,22 @@ question(Transcript, [can, i | Graduate], yes) :- graduation_phrase(Graduate, Tr
 
 %  question([phys107, chem121, engl112, math102, math103, math121, astu100, chem123, math103, phys101, engl110, cpsc110], [have, i, met,second,year, promotion, requirements], Ans).
 
-%% NOT WORKING 
-% question([engl110, engl112, fren101, fmst210, chin131, chin133, math102, math103, chem123, phys101, chem121, cpsc110, cpsc210, math200, math220, math221, stat200, stat302, math307, stat305, stat306, stat404, math303, stat300, stat344, stat406, stat443, math360, cpsc304, cpsc312, cpsc406, cpsc340, math340, fmst231, asia101, anth203, anth205, stat321, phys107], [can, i | graduate], yes).
-
-% PRE-REQ QUESTIONS
-% =========================================================================
-
-% pre_Reqs(X, Y) is true if X is a pre-req for course Y
-% pre_Reqs(X, math200) :- X = math101; X = math103; X = math105; X = math121.
+% question([engl110, engl112, fren101, fmst210, chin131, chin133, math102, math103, chem123, phys101, chem121, cpsc110, cpsc210, math200, math220, math221, stat200, stat302, math307, stat305, stat306, stat404, math303, stat300, stat344, stat406, stat443, math306, cpsc304, cpsc312, cpsc406, cpsc340, math340, fmst231, asia101, anth203, anth205, stat321, phys107], [can, i, graduate], Ans).
 
 question([what, are, pre-reqs, for | Course], C) :- pre_Reqs(C, Course).
 
-question(Transcript, [do, i, have, pre-reqs, for | Course], yes) :-
-    have_pre_reqs(Course, Transcript).
+question(Transcript, [do, i, have, pre-reqs, for | Course], yes) :- have_pre_reqs(Course, Transcript).
 
 question(Transcript, [what, courses, do, i, need, to, take, for | Course], Ans) :- missing_courses(Course, Transcript, Ans).
 
 question(Transcript, [what, requirements, am, i, missing, for | Year], Ans) :- missing_requirement_phrase(Year, Transcript, Ans).
 
-missing_requirement_phrase([second,year,promotion], Transcript, Ans) :- year2_missing_requirements(Transcript, Ans).
+question(Transcript, [can, i, take | Course], yes) :- have_pre_reqs(Course, Transcript).
 
+%======================================================================
+% Missing requirements
+
+%returns list of mising requirements given transcript
 year2_missing_requirements(Transcript, Ans) :-
     (\+ year2creditMinReq(Transcript) -> 
         M1 = '24 credit minimum not satisfied';
@@ -305,10 +290,7 @@ year2_missing_requirements(Transcript, Ans) :-
     (\+ year1_comp_sci_reqs_satisfied(Transcript) -> 
         M4 = 'year 1 cpsc requirement not satisfied';
         M4 = ''),
-    ( M1 == M2, M2 == M3, M3 == M4 -> Ans = ['All second year requirements satisfied'];
-        exclude( =(''), [M1, M2, M3, M4], Ans)).
-
-missing_requirement_phrase([third,year,promotion], Transcript, Ans) :- year3_missing_requirements(Transcript, Ans).
+    exclude( =(''), [M1, M2, M3, M4], Ans).
 
 year3_missing_requirements(Transcript, Ans) :-
     (\+ year2_stat_reqs_satisfied(Transcript) -> 
@@ -322,9 +304,6 @@ year3_missing_requirements(Transcript, Ans) :-
     exclude( =('24 credit minimum not satisfied'), Missing, Year1),
     union(Year1, Year2, Ans). 
 
-missing_requirement_phrase([fourth,year,promotion], Transcript, Ans) :- year4_missing_requirements(Transcript, Ans).
-
-
 year4_missing_requirements(Transcript,Ans):-
     (\+ year3_stat_reqs_satisfied(Transcript) -> 
             M1 = 'year 3 statistics requirement not satisfied';
@@ -337,6 +316,9 @@ year4_missing_requirements(Transcript,Ans):-
     exclude( =('48 credit minimum not satisfied'), Missing, Year12),
     union(Year12, Year3, Ans). 
 
+missing_requirement_phrase([second,year,promotion], Transcript, Ans) :- year2_missing_requirements(Transcript, Ans).
+missing_requirement_phrase([third,year,promotion], Transcript, Ans) :- year3_missing_requirements(Transcript, Ans).
+missing_requirement_phrase([fourth,year,promotion], Transcript, Ans) :- year4_missing_requirements(Transcript, Ans).
 missing_requirement_phrase([graduation], Transcript, Ans) :- graduation_missing_requirements(Transcript, Ans).
 
 graduation_missing_requirements(Transcript, Ans):-
@@ -363,8 +345,8 @@ graduation_missing_requirements(Transcript, Ans):-
     exclude( =('72 credit minimum not satisfied'), Missing, Year123),
     union(Year123, Year4, Ans).
 
-question(Transcript, [can, i, take | Course], yes) :-
-    have_pre_reqs(Course, Transcript).
+%======================================================================
+% Miscellaneous
 
 have_pre_reqs(Course, Transcript) :- 
     course(Course,_,_),
@@ -378,10 +360,6 @@ missing_courses(Course, Transcript, Ans) :-
     \+ contained_in(P, Transcript),
     Ans = P.
 
-% contained_in(L1, L2) succeeds if all elements of L1 are contained in L2
-contained_in(L1, L2) :- maplist(contains(L2), L1).
-contains(L, X) :- member(X, L).
-
 %% WORKS
 % question([math101, engl112], [do, i, have, pre-reqs, for | math200], Answer).
 % question([math111, engl112], [do, i, have, pre-reqs, for | math200], Answer).
@@ -389,6 +367,22 @@ contains(L, X) :- member(X, L).
 % question([math111, engl112], [can, i, take | math200], Answer).
 % question([engl110, engl112], [what, courses, do, i, need, to, take, for | math200], Ans).
 
+%======================================================================
+% Helper 
+subset(0, [], []).
+subset(Len, [E|Tail], [E|NTail]):-
+    succ(PLen, Len),
+    (PLen > 0 -> subset(PLen, Tail, NTail) ; NTail=[]).
+subset(Len, [_|Tail], NTail):-
+    subset(Len, Tail, NTail).
+
+creditCounter([],0).
+creditCounter([H|T], Total) :-
+    course(H, C1, _), creditCounter(T, T1), Total is C1+T1.
+
+% contained_in(L1, L2) succeeds if all elements of L1 are contained in L2
+contained_in(L1, L2) :- maplist(contains(L2), L1).
+contains(L, X) :- member(X, L).
 
 %=========================================================================
 
